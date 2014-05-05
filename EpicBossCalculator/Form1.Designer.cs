@@ -92,6 +92,8 @@
             this.label24 = new System.Windows.Forms.Label();
             this.bossHealth = new System.Windows.Forms.TextBox();
             this.label27 = new System.Windows.Forms.Label();
+            this.bossLevel = new System.Windows.Forms.TextBox();
+            this.label28 = new System.Windows.Forms.Label();
             this.armor2panel.SuspendLayout();
             this.armor1panel.SuspendLayout();
             this.armor3panel.SuspendLayout();
@@ -150,7 +152,6 @@
             this.armor1manual.Text = "Manual";
             this.armor1manual.UseVisualStyleBackColor = true;
             this.armor1manual.CheckedChanged += new System.EventHandler(this.AllCheckBoxes_CheckedChanged);
-            this.armor1combo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // armor1auto
             // 
@@ -193,6 +194,7 @@
             this.armor1combo.Size = new System.Drawing.Size(189, 21);
             this.armor1combo.TabIndex = 32;
             this.armor1combo.SelectedIndexChanged += new System.EventHandler(this.armor1combo_SelectedIndexChanged);
+            this.armor1combo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // label10
             // 
@@ -381,6 +383,7 @@
             this.bossElement2.Name = "bossElement2";
             this.bossElement2.Size = new System.Drawing.Size(90, 21);
             this.bossElement2.TabIndex = 51;
+            this.bossElement2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // bossElement1
             // 
@@ -397,6 +400,7 @@
             this.bossElement1.Name = "bossElement1";
             this.bossElement1.Size = new System.Drawing.Size(93, 21);
             this.bossElement1.TabIndex = 50;
+            this.bossElement1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // bossAttack
             // 
@@ -438,6 +442,7 @@
             this.guildRank.Name = "guildRank";
             this.guildRank.Size = new System.Drawing.Size(93, 21);
             this.guildRank.TabIndex = 60;
+            this.guildRank.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // label17
             // 
@@ -504,6 +509,7 @@
             this.airBonus.Name = "airBonus";
             this.airBonus.Size = new System.Drawing.Size(67, 21);
             this.airBonus.TabIndex = 72;
+            this.airBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // earthBonus
             // 
@@ -525,6 +531,7 @@
             this.earthBonus.Name = "earthBonus";
             this.earthBonus.Size = new System.Drawing.Size(67, 21);
             this.earthBonus.TabIndex = 73;
+            this.earthBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // fireBonus
             // 
@@ -546,6 +553,7 @@
             this.fireBonus.Name = "fireBonus";
             this.fireBonus.Size = new System.Drawing.Size(67, 21);
             this.fireBonus.TabIndex = 74;
+            this.fireBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // spiritBonus
             // 
@@ -567,6 +575,7 @@
             this.spiritBonus.Name = "spiritBonus";
             this.spiritBonus.Size = new System.Drawing.Size(67, 21);
             this.spiritBonus.TabIndex = 75;
+            this.spiritBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // waterBonus
             // 
@@ -588,6 +597,7 @@
             this.waterBonus.Name = "waterBonus";
             this.waterBonus.Size = new System.Drawing.Size(67, 21);
             this.waterBonus.TabIndex = 76;
+            this.waterBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // armor3panel
             // 
@@ -804,11 +814,29 @@
             this.label27.TabIndex = 101;
             this.label27.Text = "Boss Health";
             // 
+            // bossLevel
+            // 
+            this.bossLevel.Location = new System.Drawing.Point(419, 65);
+            this.bossLevel.Name = "bossLevel";
+            this.bossLevel.Size = new System.Drawing.Size(100, 20);
+            this.bossLevel.TabIndex = 102;
+            // 
+            // label28
+            // 
+            this.label28.AutoSize = true;
+            this.label28.Location = new System.Drawing.Point(416, 48);
+            this.label28.Name = "label28";
+            this.label28.Size = new System.Drawing.Size(59, 13);
+            this.label28.TabIndex = 103;
+            this.label28.Text = "Boss Level";
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(583, 718);
+            this.Controls.Add(this.bossLevel);
+            this.Controls.Add(this.label28);
             this.Controls.Add(this.bossHealth);
             this.Controls.Add(this.label27);
             this.Controls.Add(this.armor3attack);
@@ -947,6 +975,8 @@
         private System.Windows.Forms.Label label24;
         private System.Windows.Forms.TextBox bossHealth;
         private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.TextBox bossLevel;
+        private System.Windows.Forms.Label label28;
 
     }
 }

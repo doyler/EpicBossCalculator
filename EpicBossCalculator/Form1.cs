@@ -22,11 +22,6 @@ namespace EpicBossCalculator
             InitializeComponent();
         }
 
-        //TODO
-          //Boss level 1-60, is it required?
-          //Elements/etc. from fusion calc
-          //player level 1-100, is it required?
-
         private int getPlayerHealth(int level)
         {
             return getHealth(level, 607, 5.5m);
@@ -39,6 +34,8 @@ namespace EpicBossCalculator
 
         private int getHealth(int level, int maxHealth, decimal jump)
         {
+            //TODO: this formula isn't right
+            //TODO: combine the health and stats formulas?
             return (int)(maxHealth - (jump * (100 - level)));
         }
 
@@ -54,16 +51,268 @@ namespace EpicBossCalculator
 
         private int getStats(int level, int maxStats)
         {
-            // TODO work out player stats level equation
+            //TODO: work out player stats level equation
             return maxStats;
         }
 
+        private decimal getBaseAttack(int level)
+        {
+            //TODO: what is this about?
+            return (1.6m * level) + 4;
+        }
+
+        private decimal getGuildElementBonus(string element1, string element2)
+        {
+            decimal elementBonus = 1;
+
+            if (element1 == "Air" || element2 == "Air")
+            {
+                elementBonus += (Convert.ToInt32(airBonus.Text) / 100m);
+            }
+            if (element1 == "Earth" || element2 == "Earth")
+            {
+                elementBonus += (Convert.ToInt32(earthBonus.Text) / 100m);
+            }
+            if (element1 == "Fire" || element2 == "Fire")
+            {
+                elementBonus += (Convert.ToInt32(fireBonus.Text) / 100m);
+            }
+            if (element1 == "Spirit" || element2 == "Spirit")
+            {
+                elementBonus += (Convert.ToInt32(spiritBonus.Text) / 100m);
+            }
+            if (element1 == "Water" || element2 == "Water")
+            {
+                elementBonus += (Convert.ToInt32(waterBonus.Text) / 100m);
+            }
+
+            return elementBonus;
+        }
+
+        public bool armorIsStrongAgainst(string element1off, string element2off, string elementDef)
+        {
+            switch (elementDef)
+            {
+                case "Air":
+                    return (element1off == "Earth") || (element2off == "Earth");
+                case "Earth":
+                    return (element1off == "Spirit") || (element2off == "Spirit");
+                case "Fire":
+                    return (element1off == "Water") || (element2off == "Water");
+                case "Spirit":
+                    return (element1off == "Fire") || (element2off == "Fire");
+                case "Water":
+                    return (element1off == "Air") || (element2off == "Air");
+                default:
+                    return false;
+            }
+        }
+
+        private decimal getBossLevelBonus(int level)
+        {
+            decimal bossLevel = 0m;
+            switch (level)
+            {
+                case 10:
+                    bossLevel = 11.5m;
+                    break;
+                case 15:
+                    bossLevel = 18m;
+                    break;
+                case 21:
+                    bossLevel = 24m;
+                    break;
+                case 28:
+                    bossLevel = 31m;
+                    break;
+                case 35:
+                    bossLevel = 39m;
+                    break;
+                case 43:
+                    bossLevel = 47m;
+                    break;
+                case 51:
+                    bossLevel = 55m;
+                    break;
+                case 60:
+                    bossLevel = 67m;
+                    break;
+                default:
+                    bossLevel = (decimal)level;
+                    break;
+            }
+            //TODO: clean this up any? for now it is fine though
+            return (level < 20) ? 3 * (bossLevel + 4) : (1.6m * bossLevel) + 44;
+        }
+
+        //TODO: update and clean this method
+        private int getDamageDone(decimal baseAttack, int playerAttack, int bossDefense, decimal guildRankBonus, decimal guildElementBonus, decimal playerBonus, decimal knightBonus)
+        {
+            int knightStat = getKnightStat(playerAttack, guildRankBonus, guildElementBonus);
+            return (int)Math.Floor(Math.Floor(baseAttack * (knightStat / (decimal)bossDefense) * playerBonus) * knightBonus);
+        }
+
+        private int getDamageTaken(int playerDefense, int bossAttack, decimal guildRankBonus, decimal guildElementBonus, decimal bossLevelBonus, decimal bossElementBonus)
+        {
+            int knightStat = getKnightStat(playerDefense, guildRankBonus, guildElementBonus);
+            int damageTaken = (int)Math.Floor(Math.Floor((bossAttack / (decimal)knightStat) * bossLevelBonus) * bossElementBonus);
+            return (damageTaken > 0) ? damageTaken : 1;
+        }
+
+        public int getKnightStat(int stat, decimal guildRankBonus, decimal guildElementBonus)
+        {
+            return (int)Math.Ceiling(Math.Ceiling(stat * guildElementBonus) * guildRankBonus);
+        }
+
+
         private void calculate_Click(object sender, EventArgs e)
         {
+            bossLevel.Text = "46";
+            bossElement1.Text = "Fire";
+            bossElement2.Text = "Earth";
+            bossAttack.Text = "2203";
+            bossDefense.Text = "789";
+            bossHealth.Text = "41633";
+            
+            guildRank.Text = "Commander";
+            airBonus.Text = "10";
+            earthBonus.Text = "9";
+            fireBonus.Text = "10";
+            spiritBonus.Text = "9";
+            waterBonus.Text = "10";
+
+            armor1manual.Checked = true;
+            //Nathair+
+            armor1element1.Text = "Earth";
+            armor1element2.Text = "Water";
+            armor1attack.Text = "1432";
+            armor1defense.Text = "1437";
+
+            armor2auto.Checked = true;
+            armor2combo.Text = "Northerner's Battlegear";
+
+            armor3manual.Checked = true;
+            //Revelation
+            armor3element1.Text = "Water";
+            armor3element2.Text = "Spirit";
+            armor3attack.Text = "1802";
+            armor3defense.Text = "1892";
+
+
             if (validateForm())
             {
-                System.Diagnostics.Debug.WriteLine("Dec: " + (decimal)5.5m);
-                System.Diagnostics.Debug.WriteLine("Calc: " + ((decimal)5.5m * (90)));
+                int playerHealth = getPlayerHealth(100);
+                int playerStats = getPlayerStats(100);
+                int followerHealth = getFollowerHealth(100);
+                int followerStats = getFollowerStats(100);
+                decimal baseAttack = getBaseAttack(100);
+                decimal knightBonus = 2;
+
+                decimal guildRankBonus = 1.0m;
+                if (guildRank.SelectedIndex == 1)
+                {
+                    guildRankBonus = 1.05m;
+                }
+                else if (guildRank.SelectedIndex == 2)
+                {
+                    guildRankBonus = 1.07m;
+                }
+                else if (guildRank.SelectedIndex == 3)
+                {
+                    guildRankBonus = 1.07m;
+                }
+                else if (guildRank.SelectedIndex == 4)
+                {
+                    guildRankBonus = 1.10m;
+                }
+
+                //TODO: loop through the armors here when it's a variable amount
+                decimal guildElementBonus = getGuildElementBonus(armor1element1.Text, armor1element2.Text);
+
+                //TODO: this needs to be separate for multiple armors, and cleaner
+                decimal playerElementBonus = 1m;
+                if (armorIsStrongAgainst(armor1element1.Text, armor1element2.Text, bossElement1.Text))
+                {
+                    playerElementBonus += 0.5m;
+                }
+                if (bossElement2.Text != "None")
+                {
+                    if (armorIsStrongAgainst(armor1element1.Text, armor1element2.Text, bossElement2.Text))
+                    {
+                        playerElementBonus += 0.5m;
+                    }
+                }
+
+                decimal bossLevelBonus = getBossLevelBonus(Convert.ToInt32(bossLevel.Text));
+
+                //TODO: same as player bonus, clean and separate
+                decimal bossElementBonus = 1m;
+                if (armorIsStrongAgainst(bossElement1.Text, bossElement2.Text, armor1element1.Text))
+                {
+                    bossElementBonus += 0.5m;
+                }
+                if (armor1element2.Text != "None")
+                {
+                    if (armorIsStrongAgainst(bossElement1.Text, bossElement2.Text, armor1element2.Text))
+                    {
+                        bossElementBonus += 0.5m;
+                    }
+                }
+
+                int playerDamageDone = getDamageDone(baseAttack, Convert.ToInt32(armor1attack.Text) + playerStats, Convert.ToInt32(bossDefense.Text), guildRankBonus, guildElementBonus, playerElementBonus, knightBonus);
+                int followerDamageDone = getDamageDone(baseAttack, Convert.ToInt32(armor1attack.Text) + followerStats, Convert.ToInt32(bossDefense.Text), guildRankBonus, guildElementBonus, playerElementBonus, knightBonus);
+
+                int playerDamageTaken = getDamageTaken(Convert.ToInt32(armor1defense.Text) + playerStats, Convert.ToInt32(bossAttack.Text), guildRankBonus, guildElementBonus, bossLevelBonus, bossElementBonus);
+                int followerDamageTaken = getDamageTaken(Convert.ToInt32(armor1defense.Text) + followerStats, Convert.ToInt32(bossAttack.Text), guildRankBonus, guildElementBonus, bossLevelBonus, bossElementBonus);
+
+                int playerHitsTaken = (playerHealth / playerDamageTaken) + 1;
+                int followerHitsTaken = (followerHealth / followerDamageTaken) + 1;
+
+                System.Diagnostics.Debug.WriteLine(String.Format("Boss level {0}, {1}/{2}, {3}/{4}", bossLevel.Text, bossElement1.Text, bossElement2.Text, bossAttack.Text, bossDefense.Text));
+                System.Diagnostics.Debug.WriteLine(String.Format("Level {0} {1} with {2}% in all bonuses", 100, guildRank.Text, airBonus.Text));
+                System.Diagnostics.Debug.WriteLine(String.Format("Level {0} {1}", 99, armor1combo.Text));
+                System.Diagnostics.Debug.WriteLine(String.Format("Player: {0} damage done, {1} damage taken, {2} hits taken, {3} total damage done", playerDamageDone, playerDamageTaken, playerHitsTaken, (playerHitsTaken - 1) * playerDamageDone));
+                System.Diagnostics.Debug.WriteLine(String.Format("Follower: {0} damage done, {1} damage taken, {2} hits taken, {3} total damage done", followerDamageDone, followerDamageTaken, followerHitsTaken, (followerHitsTaken - 1) * followerDamageDone));
+
+                /*
+                 * KADC OUTPUT
+                 * ------------
+                 * Boss level 20, Fire/Earth, 1500/1500, (23697 hp???)
+                 * Level 100 Commander with 10% in all bonuses
+                 * Level 99 Northerner's
+                 * Player: 400 damage done, 61 damage taken, 10 hits taken, 3600 total damage done
+                 * Follower: 386 damage done, 64 damage taken, 8 hits taken, 2702 total damage done
+                 */
+
+                /*
+                 * PROGRAM OUTPUT
+                 * ---------------
+                 * Level 100 Commander with 10% in all bonuses
+                 * Level 99 Northerner's Battlegear
+                 * Player: 400 damage done, 61 damage taken, 10 hits taken, 3600 total damage done
+                 * Follower: 386 damage done, 64 damage taken, 8 hits taken, 2702 total damage done
+                 */
+
+                /*
+                 * Program
+                 * --------
+                 * Vs lvl 46
+                 * 
+                 * Nathair - 735 diff (1238/129) - actual = 1238/129
+                 * --------
+                 * Player: 648 damage done, 124 damage taken, 5 hits taken, 2592 total damage done
+                 * Follower: 619 damage done, 129 damage taken, 4 hits taken, 1857 total damage done
+                 * 
+                 * Northerner's - 842 diff (1468/147) - actual = 1468/147
+                 * -------------
+                 * Player: 761 damage done, 140 damage taken, 5 hits taken, 3044 total damage done
+                 * Follower: 734 damage done, 147 damage taken, 4 hits taken, 2202 total damage done
+                 * 
+                 * Revelation - 2176 diff (2096/147) - actual = 2096/147
+                 * -----------
+                 * Player: 1048 damage done, 147 damage taken, 5 hits taken, 4192 total damage done
+                 * Follower: 1008 damage done, 153 damage taken, 3 hits taken, 2016 total damage done
+                 */
             }
         }
 
@@ -119,9 +368,19 @@ namespace EpicBossCalculator
                 showError("You must enter in an integer value for the boss's health");
                 return false;
             }
-            else if (Convert.ToInt32(bossHealth.Text) < 0 || Convert.ToInt32(bossHealth.Text) > 50000)
+            else if (Convert.ToInt32(bossHealth.Text) < 1 || Convert.ToInt32(bossHealth.Text) > 50000)
             {
-                showError("You must enter an appropriate value for the boss's health (accepted values are 0-50000)");
+                showError("You must enter an appropriate value for the boss's health (accepted values are 1-50000)");
+                return false;
+            }
+            else if (!Regex.IsMatch(bossLevel.Text, @"^\d+$"))
+            {
+                showError("You must enter in an integer value for the boss's level");
+                return false;
+            }
+            else if (Convert.ToInt32(bossLevel.Text) < 1 || Convert.ToInt32(bossLevel.Text) > 60)
+            {
+                showError("You must enter an appropriate value for the boss's level (accepted values are 1-60)");
                 return false;
             }
             else if (guildRank.Text == "")
@@ -457,191 +716,61 @@ namespace EpicBossCalculator
 }
 
 /*
-namespace KnightsAndDragonsCalculatorApplication.Calculator
-{
-    public class KnightsAndDragonsCalculator
-    {
-        public CalculatorResults Calculate(EpicBossRequest request)
-        {
-            // validation
-            string epicBossValidationMessage = GetEpicBossDataValidationMessage(request.EpicBoss);
-            if (!string.IsNullOrEmpty(epicBossValidationMessage)) return new CalculatorResults(epicBossValidationMessage);
-            string guildValidationMessage = GetGuildDataValidationMessage(request.Guild);
-            if (!string.IsNullOrEmpty(guildValidationMessage)) return new CalculatorResults(guildValidationMessage);
-            string playerValidationMessage = GetPlayerDataValidationMessage(request.Player);
-            if (!string.IsNullOrEmpty(playerValidationMessage)) return new CalculatorResults(playerValidationMessage);
+(knight health ignoring level 1 - (r) = .99989)
+y=51.333333333333+5.5757575757576x
 
-            EpicBossResults epicBoss = GetEpicBossResults(request.EpicBoss, request.Guild, request.Player);
 
-            return new CalculatorResults(epicBoss);
-        }
+10,92
+20,131
+30,169
+40,190
+50,211
+60,232
+70,253
+80,274
+90,295
+100,316
 
-        #region Epic Boss
 
-        private EpicBossResults GetEpicBossResults(EpicBoss epicBoss, Guild guild, Player player)
-        {
-            EpicBossResults results = new EpicBossResults();
-            results.Items = new List<EpicBossResultItem>();
 
-            int playerHealth = GetPlayerHealth(player.Level);
-            int playerStats = GetPlayerStats(player.Level);
-            int followerHealth = GetFollowerHealth(player.Level);
-            int followerStats = GetFollowerStats(player.Level);
-            decimal baseAttack = GetBaseAttack(player.Level);
-            decimal knightBonus = GetKnightBonus(player.KnightCount);
 
-            foreach (PlayerArmor playerArmor in player.Armors)
-            {
-                Armor armor = ArmorTable.Instance.GetArmor(playerArmor.ArmorName);
 
-                KeyValuePair<int, int> armorStats = GetArmorStats(armor, playerArmor.Level, playerArmor.IsPlus);
-                decimal guildRankBonus = GetGuildRankBonus(guild.RankBonus);
-                decimal guildElementBonus = GetGuildElementBonus(armor, guild);
-                decimal playerBonus = GetPlayerBonus(epicBoss.Element1, epicBoss.Element2, armor, playerArmor.IsNemesis);
-                decimal bossLevelBonus = GetBossLevelBonus(epicBoss.Level);
-                decimal bossElementBonus = GetBossElementBonus(epicBoss, armor);
+health jumps
+-------------
+1 -> 10 = 72
+10 -> 20 = 60
+20 -> 30 = 60
+30 -> 40 = 55
+...
+90 -> 100 = 55
 
-                int playerDamageDone = GetDamageDone(baseAttack, armorStats.Key + playerStats, epicBoss.Defense, guildRankBonus, guildElementBonus, playerBonus, knightBonus);
-                int followerDamageDone = GetDamageDone(baseAttack, armorStats.Key + followerStats, epicBoss.Defense, guildRankBonus, guildElementBonus, playerBonus, knightBonus);
 
-                int playerDamageTaken = GetDamageTaken(armorStats.Value + playerStats, epicBoss.Attack, guildRankBonus, guildElementBonus, bossLevelBonus, bossElementBonus);
-                int followerDamageTaken = GetDamageTaken(armorStats.Value + followerStats, epicBoss.Attack, guildRankBonus, guildElementBonus, bossLevelBonus, bossElementBonus);
+stat jumps
+----------
+1 -> 10 = 62
+10 -> 20 = 39
+20 -> 30 = 38
+30 -> 40 = 21
+...
+90 -> 100 = 21
 
-                int playerHitsTaken = (playerHealth / playerDamageTaken) + 1;
-                int followerHitsTaken = (followerHealth / followerDamageTaken) + 1;
 
-                results.Items.Add(new EpicBossResultItem(armor.Name, armor.SafeName, playerDamageDone, playerDamageTaken, playerHitsTaken, followerDamageDone, followerDamageTaken, followerHitsTaken));
-            }
-            results.Items.Sort((x, y) => -1 * x.PlayerTotalDamageDone.CompareTo(y.PlayerTotalDamageDone));
+follow health jumps
+--------------------
+1 -> 10 = 77
+10 -> 20 = 45
+20 -> 30 = 45
+30 -> 40 = 41
+...
+90 -> 100 = 41
 
-            return results;
-        }
 
-        private string GetPlayerDataValidationMessage(Player player)
-        {
-            if (player == null) return Strings.ErrorPlayerDataNotProvided;
-            if (player.Level < 1 || player.Level > 100) return Strings.ErrorInvalidPlayerLevel;
-            if (player.KnightCount < 1 || player.KnightCount > 5) return Strings.ErrorInvalidPlayerKnightCount;
-            if (player.Armors == null || player.Armors.Count <= 0) return Strings.ErrorPlayerArmorsDataNotProvided;
-
-            foreach (PlayerArmor playerArmor in player.Armors)
-            {
-                Armor armor = ArmorTable.Instance.GetArmor(playerArmor.ArmorName);
-                if (armor == null) return string.Format(Strings.ErrorPlayerArmorNotFound, playerArmor.ArmorName);
-                if (playerArmor.Level < 1 || playerArmor.Level > armor.MaxLevel) return string.Format(Strings.ErrorInvalidPlayerArmorLevel, playerArmor.ArmorName, armor.MaxLevel);
-                if (playerArmor.IsNemesis && armor.Rarity != Rarity.Nemesis) return string.Format(Strings.ErrorInvalidIsNemesis, playerArmor.ArmorName);
-                if ((playerArmor.IsPlus && armor.PlusStats == null) || (!playerArmor.IsPlus && armor.NormalStats == null)) return string.Format(Strings.ErrorArmorStatsNotAvailable, playerArmor.ArmorName);
-            }
-
-            return string.Empty;
-        }
-
-        private KeyValuePair<int, int> GetArmorStats(Armor armor, int level, bool isPlus)
-        {
-            int armorAttack = (isPlus) ? armor.GetPlusAttackAt(level) : armor.GetNormalAttackAt(level);
-            int armorDefense = (isPlus) ? armor.GetPlusDefenseAt(level) : armor.GetNormalDefenseAt(level);
-
-            return new KeyValuePair<int, int>(armorAttack, armorDefense);
-        }
-
-        private decimal GetGuildRankBonus(int rankBonus)
-        {
-            return 1 + (rankBonus / 100m);
-        }
-
-        private decimal GetGuildElementBonus(Armor armor, Guild guild)
-        {
-            decimal elementBonus = 1;
-            if (armor.Element1 != Element.All)
-            {
-                if (armor.HasElement(Element.Air)) elementBonus += (guild.AirBonus / 100m);
-                if (armor.HasElement(Element.Earth)) elementBonus += (guild.EarthBonus / 100m);
-                if (armor.HasElement(Element.Fire)) elementBonus += (guild.FireBonus / 100m);
-                if (armor.HasElement(Element.Spirit)) elementBonus += (guild.SpiritBonus / 100m);
-                if (armor.HasElement(Element.Water)) elementBonus += (guild.WaterBonus / 100m);
-            }
-
-            return elementBonus;
-        }
-
-        private decimal GetPlayerBonus(Element bossElement1, Element? bossElement2, Armor armor, bool isNemesis)
-        {
-            if (isNemesis) return 4.5m;
-            if (armor.Element1 == Element.All) return 1.5m;
-            bool isStrongAgainstElement1 = armor.IsStrongAgainst(bossElement1);
-            bool isStrongAgainstElement2 = bossElement2 != null && armor.IsStrongAgainst(bossElement2.Value);
-            return 1m + (isStrongAgainstElement1 ? 0.5m : 0m) + (isStrongAgainstElement2 ? 0.5m : 0m);
-        }
-
-        private decimal GetKnightBonus(int count)
-        {
-            return 1 + ((count - 1) * 0.25m);
-        }
-
-        private decimal GetBossLevelBonus(int level)
-        {
-            decimal bossLevel = GetBossLevel(level);
-            return (level < 20) ? 3 * (bossLevel + 4) : (1.6m * bossLevel) + 44;
-        }
-
-        private decimal GetBossElementBonus(EpicBoss epicBoss, Armor armor)
-        {
-            decimal elementBonus = 1;
-            if (armor.IsWeakAgainst(epicBoss.Element1)) elementBonus += 0.5m;
-            if (epicBoss.Element2 != null && armor.IsWeakAgainst(epicBoss.Element2.Value)) elementBonus += 0.5m;
-
-            return elementBonus;
-        }
-
-        private decimal GetBossLevel(int level)
-        {
-            switch (level)
-            {
-                case 10:
-                    return 11.5m;
-                case 15:
-                    return 18m;
-                case 21:
-                    return 24m;
-                case 28:
-                    return 31m;
-                case 35:
-                    return 39m;
-                case 43:
-                    return 47m;
-                case 51:
-                    return 55m;
-                case 60:
-                    return 67m;
-                default:
-                    return level;
-            }
-        }
-
-        private int GetDamageDone(decimal baseAttack, int playerAttack, int bossDefense, decimal guildRankBonus, decimal guildElementBonus, decimal playerBonus, decimal knightBonus)
-        {
-            int knightStat = GetKnightStat(playerAttack, guildRankBonus, guildElementBonus);
-            return (int)Math.Floor(Math.Floor(baseAttack * (knightStat / (decimal)bossDefense) * playerBonus) * knightBonus);
-        }
-
-        private decimal GetBaseAttack(int level)
-        {
-            return (1.6m * level) + 4;
-        }
-
-        private int GetDamageTaken(int playerDefense, int bossAttack, decimal guildRankBonus, decimal guildElementBonus, decimal bossLevelBonus, decimal bossElementBonus)
-        {
-            int knightStat = GetKnightStat(playerDefense, guildRankBonus, guildElementBonus);
-            int damageTaken = (int)Math.Floor(Math.Floor((bossAttack / (decimal)knightStat) * bossLevelBonus) * bossElementBonus);
-            return (damageTaken > 0) ? damageTaken : 1;
-        }
-
-        public int GetKnightStat(int stat, decimal guildRankBonus, decimal guildElementBonus)
-        {
-            return (int)Math.Ceiling(Math.Ceiling(stat * guildElementBonus) * guildRankBonus);
-        }
-
-        #endregion
-    }
-}
+follow stat jumps
+------------------
+1 -> 10 = 69
+10 -> 20 = 29
+20 -> 30 = 29
+30 -> 40 = 16
+...
+90 -> 100 = 16
 */
