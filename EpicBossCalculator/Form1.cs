@@ -22,46 +22,44 @@ namespace EpicBossCalculator
             InitializeComponent();
         }
 
-        private int getPlayerHealth(int level)
+        private int GetStat(int level, int statMax, decimal statJump)
         {
-            return getHealth(level, 607, 5.5m);
+            if (level >= 30)
+            {
+                return (int)(statMax - (statJump * (100 - level)));
+            }
+            else
+            {
+                return statMax;
+            }
         }
 
-        private int getFollowerHealth(int level)
+        private int GetPlayerHealth(int level)
         {
-            return getHealth(level, 455, 4);
+            return GetStat(level, 607, 5.5m);
         }
 
-        private int getHealth(int level, int maxHealth, decimal jump)
+        private int GetFollowerHealth(int level)
         {
-            //TODO: this formula isn't right
-            //TODO: combine the health and stats formulas?
-            return (int)(maxHealth - (jump * (100 - level)));
+            return GetStat(level, 455, 4);
         }
 
-        private int getPlayerStats(int level)
+        private int GetPlayerStats(int level)
         {
-            return getStats(level, 316);
+            return GetStat(level, 316, 21);
         }
 
-        private int getFollowerStats(int level)
+        private int GetFollowerStats(int level)
         {
-            return getStats(level, 237);
+            return GetStat(level, 237, 16);
         }
 
-        private int getStats(int level, int maxStats)
+        private decimal GetBaseAttack(int level)
         {
-            //TODO: work out player stats level equation
-            return maxStats;
-        }
-
-        private decimal getBaseAttack(int level)
-        {
-            //TODO: what is this about?
             return (1.6m * level) + 4;
         }
 
-        private decimal getGuildElementBonus(string element1, string element2)
+        private decimal GetGuildElementBonus(string element1, string element2)
         {
             decimal elementBonus = 1;
 
@@ -89,7 +87,24 @@ namespace EpicBossCalculator
             return elementBonus;
         }
 
-        public bool armorIsStrongAgainst(string element1off, string element2off, string elementDef)
+        private decimal GetElementalBonus(string element1off, string element2off, string element1def, string element2def)
+        {
+            decimal elementalBonus = 1m;
+            if (ArmorIsStrongAgainst(element1off, element2off, element1def))
+            {
+                elementalBonus += 0.5m;
+            }
+            if (element2def != "None")
+            {
+                if (ArmorIsStrongAgainst(element1off, element2off, element2def))
+                {
+                    elementalBonus += 0.5m;
+                }
+            }
+            return elementalBonus;
+        }
+
+        private bool ArmorIsStrongAgainst(string element1off, string element2off, string elementDef)
         {
             switch (elementDef)
             {
@@ -108,7 +123,7 @@ namespace EpicBossCalculator
             }
         }
 
-        private decimal getBossLevelBonus(int level)
+        private decimal GetBossLevelBonus(int level)
         {
             decimal bossLevel = 0m;
             switch (level)
@@ -141,25 +156,24 @@ namespace EpicBossCalculator
                     bossLevel = (decimal)level;
                     break;
             }
-            //TODO: clean this up any? for now it is fine though
             return (level < 20) ? 3 * (bossLevel + 4) : (1.6m * bossLevel) + 44;
         }
 
         //TODO: update and clean this method
-        private int getDamageDone(decimal baseAttack, int playerAttack, int bossDefense, decimal guildRankBonus, decimal guildElementBonus, decimal playerBonus, decimal knightBonus)
+        private int GetDamageDone(decimal baseAttack, int playerAttack, int bossDefense, decimal guildRankBonus, decimal guildElementBonus, decimal playerBonus, decimal knightBonus)
         {
-            int knightStat = getKnightStat(playerAttack, guildRankBonus, guildElementBonus);
+            int knightStat = GetKnightStat(playerAttack, guildRankBonus, guildElementBonus);
             return (int)Math.Floor(Math.Floor(baseAttack * (knightStat / (decimal)bossDefense) * playerBonus) * knightBonus);
         }
 
-        private int getDamageTaken(int playerDefense, int bossAttack, decimal guildRankBonus, decimal guildElementBonus, decimal bossLevelBonus, decimal bossElementBonus)
+        private int GetDamageTaken(int playerDefense, int bossAttack, decimal guildRankBonus, decimal guildElementBonus, decimal bossLevelBonus, decimal bossElementBonus)
         {
-            int knightStat = getKnightStat(playerDefense, guildRankBonus, guildElementBonus);
+            int knightStat = GetKnightStat(playerDefense, guildRankBonus, guildElementBonus);
             int damageTaken = (int)Math.Floor(Math.Floor((bossAttack / (decimal)knightStat) * bossLevelBonus) * bossElementBonus);
             return (damageTaken > 0) ? damageTaken : 1;
         }
 
-        public int getKnightStat(int stat, decimal guildRankBonus, decimal guildElementBonus)
+        public int GetKnightStat(int stat, decimal guildRankBonus, decimal guildElementBonus)
         {
             return (int)Math.Ceiling(Math.Ceiling(stat * guildElementBonus) * guildRankBonus);
         }
@@ -181,15 +195,15 @@ namespace EpicBossCalculator
             spiritBonus.Text = "9";
             waterBonus.Text = "10";
 
-            armor1manual.Checked = true;
+            armor2manual.Checked = true;
             //Nathair+
-            armor1element1.Text = "Earth";
-            armor1element2.Text = "Water";
-            armor1attack.Text = "1432";
-            armor1defense.Text = "1437";
+            armor2element1.Text = "Earth";
+            armor2element2.Text = "Water";
+            armor2attack.Text = "1432";
+            armor2defense.Text = "1437";
 
-            armor2auto.Checked = true;
-            armor2combo.Text = "Northerner's Battlegear";
+            armor1auto.Checked = true;
+            armor1combo.Text = "Northerner's Battlegear";
 
             armor3manual.Checked = true;
             //Revelation
@@ -199,13 +213,13 @@ namespace EpicBossCalculator
             armor3defense.Text = "1892";
 
 
-            if (validateForm())
+            if (ValidateForm())
             {
-                int playerHealth = getPlayerHealth(100);
-                int playerStats = getPlayerStats(100);
-                int followerHealth = getFollowerHealth(100);
-                int followerStats = getFollowerStats(100);
-                decimal baseAttack = getBaseAttack(100);
+                int playerHealth = GetPlayerHealth(100);
+                int playerStats = GetPlayerStats(100);
+                int followerHealth = GetFollowerHealth(100);
+                int followerStats = GetFollowerStats(100);
+                decimal baseAttack = GetBaseAttack(100);
                 decimal knightBonus = 1 + ((5 - 1) * 0.25m); //5 is the knight count from UI
 
                 decimal guildRankBonus = 1.0m;
@@ -213,11 +227,7 @@ namespace EpicBossCalculator
                 {
                     guildRankBonus = 1.05m;
                 }
-                else if (guildRank.SelectedIndex == 2)
-                {
-                    guildRankBonus = 1.07m;
-                }
-                else if (guildRank.SelectedIndex == 3)
+                else if (guildRank.SelectedIndex == 2 || guildRank.SelectedIndex == 3)
                 {
                     guildRankBonus = 1.07m;
                 }
@@ -226,93 +236,30 @@ namespace EpicBossCalculator
                     guildRankBonus = 1.10m;
                 }
 
-                //TODO: loop through the armors here when it's a variable amount
-                decimal guildElementBonus = getGuildElementBonus(armor1element1.Text, armor1element2.Text);
+                decimal guildElementBonus = GetGuildElementBonus(armor1element1.Text, armor1element2.Text);
+                decimal playerElementBonus = GetElementalBonus(armor1element1.Text, armor1element2.Text, bossElement1.Text, bossElement2.Text);
+                    
+                decimal bossLevelBonus = GetBossLevelBonus(Convert.ToInt32(bossLevel.Text));
+                decimal bossElementBonus = GetElementalBonus(bossElement1.Text, bossElement2.Text, armor1element1.Text, armor1element2.Text);
 
-                //TODO: this needs to be separate for multiple armors, and cleaner
-                decimal playerElementBonus = 1m;
-                if (armorIsStrongAgainst(armor1element1.Text, armor1element2.Text, bossElement1.Text))
-                {
-                    playerElementBonus += 0.5m;
-                }
-                if (bossElement2.Text != "None")
-                {
-                    if (armorIsStrongAgainst(armor1element1.Text, armor1element2.Text, bossElement2.Text))
-                    {
-                        playerElementBonus += 0.5m;
-                    }
-                }
+                int playerDamageDone = GetDamageDone(baseAttack, Convert.ToInt32(armor1attack.Text) + playerStats, Convert.ToInt32(bossDefense.Text), guildRankBonus, guildElementBonus, playerElementBonus, knightBonus);
+                int followerDamageDone = GetDamageDone(baseAttack, Convert.ToInt32(armor1attack.Text) + followerStats, Convert.ToInt32(bossDefense.Text), guildRankBonus, guildElementBonus, playerElementBonus, knightBonus);
 
-                decimal bossLevelBonus = getBossLevelBonus(Convert.ToInt32(bossLevel.Text));
-
-                //TODO: same as player bonus, clean and separate
-                decimal bossElementBonus = 1m;
-                if (armorIsStrongAgainst(bossElement1.Text, bossElement2.Text, armor1element1.Text))
-                {
-                    bossElementBonus += 0.5m;
-                }
-                if (armor1element2.Text != "None")
-                {
-                    if (armorIsStrongAgainst(bossElement1.Text, bossElement2.Text, armor1element2.Text))
-                    {
-                        bossElementBonus += 0.5m;
-                    }
-                }
-
-                int playerDamageDone = getDamageDone(baseAttack, Convert.ToInt32(armor1attack.Text) + playerStats, Convert.ToInt32(bossDefense.Text), guildRankBonus, guildElementBonus, playerElementBonus, knightBonus);
-                int followerDamageDone = getDamageDone(baseAttack, Convert.ToInt32(armor1attack.Text) + followerStats, Convert.ToInt32(bossDefense.Text), guildRankBonus, guildElementBonus, playerElementBonus, knightBonus);
-
-                int playerDamageTaken = getDamageTaken(Convert.ToInt32(armor1defense.Text) + playerStats, Convert.ToInt32(bossAttack.Text), guildRankBonus, guildElementBonus, bossLevelBonus, bossElementBonus);
-                int followerDamageTaken = getDamageTaken(Convert.ToInt32(armor1defense.Text) + followerStats, Convert.ToInt32(bossAttack.Text), guildRankBonus, guildElementBonus, bossLevelBonus, bossElementBonus);
+                int playerDamageTaken = GetDamageTaken(Convert.ToInt32(armor1defense.Text) + playerStats, Convert.ToInt32(bossAttack.Text), guildRankBonus, guildElementBonus, bossLevelBonus, bossElementBonus);
+                int followerDamageTaken = GetDamageTaken(Convert.ToInt32(armor1defense.Text) + followerStats, Convert.ToInt32(bossAttack.Text), guildRankBonus, guildElementBonus, bossLevelBonus, bossElementBonus);
 
                 int playerHitsTaken = (playerHealth / playerDamageTaken) + 1;
                 int followerHitsTaken = (followerHealth / followerDamageTaken) + 1;
 
-                System.Diagnostics.Debug.WriteLine(String.Format("Boss level {0}, {1}/{2}, {3}/{4}", bossLevel.Text, bossElement1.Text, bossElement2.Text, bossAttack.Text, bossDefense.Text));
-                System.Diagnostics.Debug.WriteLine(String.Format("Level {0} {1} with {2}% in all bonuses", 100, guildRank.Text, airBonus.Text));
-                System.Diagnostics.Debug.WriteLine(String.Format("Level {0} {1}", 99, armor1combo.Text));
-                System.Diagnostics.Debug.WriteLine(String.Format("Player: {0} damage done, {1} damage taken, {2} hits taken, {3} total damage done", playerDamageDone, playerDamageTaken, playerHitsTaken, (playerHitsTaken - 1) * playerDamageDone));
-                System.Diagnostics.Debug.WriteLine(String.Format("Follower: {0} damage done, {1} damage taken, {2} hits taken, {3} total damage done", followerDamageDone, followerDamageTaken, followerHitsTaken, (followerHitsTaken - 1) * followerDamageDone));
-
-                /*
-                 * KADC OUTPUT
-                 * ------------
-                 * Boss level 20, Fire/Earth, 1500/1500, (23697 hp???)
-                 * Level 100 Commander with 10% in all bonuses
-                 * Level 99 Northerner's
-                 * Player: 400 damage done, 61 damage taken, 10 hits taken, 3600 total damage done
-                 * Follower: 386 damage done, 64 damage taken, 8 hits taken, 2702 total damage done
-                 */
-
-                /*
-                 * PROGRAM OUTPUT
-                 * ---------------
-                 * Level 100 Commander with 10% in all bonuses
-                 * Level 99 Northerner's Battlegear
-                 * Player: 400 damage done, 61 damage taken, 10 hits taken, 3600 total damage done
-                 * Follower: 386 damage done, 64 damage taken, 8 hits taken, 2702 total damage done
-                 */
-
-                /*
-                 * Program
-                 * --------
-                 * Vs lvl 46
-                 * 
-                 * Nathair - 735 diff (1238/129) - actual = 1238/129
-                 * --------
-                 * Player: 648 damage done, 124 damage taken, 5 hits taken, 2592 total damage done
-                 * Follower: 619 damage done, 129 damage taken, 4 hits taken, 1857 total damage done
-                 * 
-                 * Northerner's - 842 diff (1468/147) - actual = 1468/147
-                 * -------------
-                 * Player: 761 damage done, 140 damage taken, 5 hits taken, 3044 total damage done
-                 * Follower: 734 damage done, 147 damage taken, 4 hits taken, 2202 total damage done
-                 * 
-                 * Revelation - 2176 diff (2096/147) - actual = 2096/147
-                 * -----------
-                 * Player: 1048 damage done, 147 damage taken, 5 hits taken, 4192 total damage done
-                 * Follower: 1008 damage done, 153 damage taken, 3 hits taken, 2016 total damage done
-                 */
+                outcomes.Text += String.Format("Boss level {0}, {1}/{2}, {3}/{4}", bossLevel.Text, bossElement1.Text, bossElement2.Text, bossAttack.Text, bossDefense.Text);
+                outcomes.Text += "\r\n";
+                outcomes.Text += String.Format("Level {0} {1}", 100, guildRank.Text);
+                outcomes.Text += "\r\n";
+                outcomes.Text += String.Format("Level {0} {1}", 99, armor1combo.Text);
+                outcomes.Text += "\r\n";
+                outcomes.Text += String.Format("Player: {0} damage done, {1} damage taken, {2} hits taken, {3} total damage done", playerDamageDone, playerDamageTaken, playerHitsTaken, (playerHitsTaken - 1) * playerDamageDone);
+                outcomes.Text += "\r\n";
+                outcomes.Text += String.Format("Follower: {0} damage done, {1} damage taken, {2} hits taken, {3} total damage done", followerDamageDone, followerDamageTaken, followerHitsTaken, (followerHitsTaken - 1) * followerDamageDone);
             }
         }
 
@@ -331,191 +278,191 @@ namespace EpicBossCalculator
             return dataTable;
         }
 
-        private bool validateForm()
+        private bool ValidateForm()
         {
             if (bossElement1.Text == "")
             {
-                showError("You must select an element 1 for the boss");
+                ShowError("You must select an element 1 for the boss");
                 return false;
             }
             else if (bossElement2.Text == "")
             {
-                showError("You must select an element 2 for the boss (select none for mono-element)");
+                ShowError("You must select an element 2 for the boss (select none for mono-element)");
                 return false;
             }
             else if (!Regex.IsMatch(bossAttack.Text, @"^\d+$"))
             {
-                showError("You must enter in an integer value for the boss's attack");
+                ShowError("You must enter in an integer value for the boss's attack");
                 return false;
             }
             else if (Convert.ToInt32(bossAttack.Text) < 0 || Convert.ToInt32(bossAttack.Text) > 5000)
             {
-                showError("You must enter an appropriate value for the boss's attack (accepted values are 0-5000)");
+                ShowError("You must enter an appropriate value for the boss's attack (accepted values are 0-5000)");
                 return false;
             }
             else if (!Regex.IsMatch(bossDefense.Text, @"^\d+$"))
             {
-                showError("You must enter in an integer value for the boss's defense");
+                ShowError("You must enter in an integer value for the boss's defense");
                 return false;
             }
             else if (Convert.ToInt32(bossDefense.Text) < 0 || Convert.ToInt32(bossDefense.Text) > 5000)
             {
-                showError("You must enter an appropriate value for the boss's defense (accepted values are 0-5000)");
+                ShowError("You must enter an appropriate value for the boss's defense (accepted values are 0-5000)");
                 return false;
             }
             else if (!Regex.IsMatch(bossHealth.Text, @"^\d+$"))
             {
-                showError("You must enter in an integer value for the boss's health");
+                ShowError("You must enter in an integer value for the boss's health");
                 return false;
             }
             else if (Convert.ToInt32(bossHealth.Text) < 1 || Convert.ToInt32(bossHealth.Text) > 50000)
             {
-                showError("You must enter an appropriate value for the boss's health (accepted values are 1-50000)");
+                ShowError("You must enter an appropriate value for the boss's health (accepted values are 1-50000)");
                 return false;
             }
             else if (!Regex.IsMatch(bossLevel.Text, @"^\d+$"))
             {
-                showError("You must enter in an integer value for the boss's level");
+                ShowError("You must enter in an integer value for the boss's level");
                 return false;
             }
             else if (Convert.ToInt32(bossLevel.Text) < 1 || Convert.ToInt32(bossLevel.Text) > 60)
             {
-                showError("You must enter an appropriate value for the boss's level (accepted values are 1-60)");
+                ShowError("You must enter an appropriate value for the boss's level (accepted values are 1-60)");
                 return false;
             }
             else if (guildRank.Text == "")
             {
-                showError("You must select a guild rank (select none if not in a guild)");
+                ShowError("You must select a guild rank (select none if not in a guild)");
                 return false;
             }
             else if (airBonus.Text == "")
             {
-                showError("You must select an air bonus % (select none if not in a guild)");
+                ShowError("You must select an air bonus % (select none if not in a guild)");
                 return false;
             }
             else if (earthBonus.Text == "")
             {
-                showError("You must select an earth bonus % (select none if not in a guild)");
+                ShowError("You must select an earth bonus % (select none if not in a guild)");
                 return false;
             }
             else if (fireBonus.Text == "")
             {
-                showError("You must select an fire bonus % (select none if not in a guild)");
+                ShowError("You must select an fire bonus % (select none if not in a guild)");
                 return false;
             }
             else if (spiritBonus.Text == "")
             {
-                showError("You must select an spirit bonus % (select none if not in a guild)");
+                ShowError("You must select an spirit bonus % (select none if not in a guild)");
                 return false;
             }
             else if (waterBonus.Text == "")
             {
-                showError("You must select an water bonus % (select none if not in a guild)");
+                ShowError("You must select an water bonus % (select none if not in a guild)");
                 return false;
             }
             if (armor1element1.Text == "")
             {
-                showError("You must select an element 1 for armor 1");
+                ShowError("You must select an element 1 for armor 1");
                 return false;
             }
             else if (armor1element2.Text == "")
             {
-                showError("You must select an element 2 for armor 1 (select none for mono-element)");
+                ShowError("You must select an element 2 for armor 1 (select none for mono-element)");
                 return false;
             }
             else if (armor2element1.Text == "")
             {
-                showError("You must select an element 1 for armor 2");
+                ShowError("You must select an element 1 for armor 2");
                 return false;
             }
             else if (armor2element2.Text == "")
             {
-                showError("You must select an element 2 for armor 2 (select none for mono-element)");
+                ShowError("You must select an element 2 for armor 2 (select none for mono-element)");
                 return false;
             }
             else if (armor3element1.Text == "")
             {
-                showError("You must select an element 1 for armor 3");
+                ShowError("You must select an element 1 for armor 3");
                 return false;
             }
             else if (armor3element2.Text == "")
             {
-                showError("You must select an element 2 for armor 3 (select none for mono-element)");
+                ShowError("You must select an element 2 for armor 3 (select none for mono-element)");
                 return false;
             }
             else if (armor1element1.Text == armor1element2.Text)
             {
-                showError("Armor 1 cannot have 2 of the same element.");
+                ShowError("Armor 1 cannot have 2 of the same element.");
                 return false;
             }
             else if (armor2element1.Text == armor2element2.Text)
             {
-                showError("Armor 2 cannot have 2 of the same element.");
+                ShowError("Armor 2 cannot have 2 of the same element.");
                 return false;
             }
             else if (armor3element1.Text == armor3element2.Text)
             {
-                showError("Armor 3 cannot have 2 of the same element.");
+                ShowError("Armor 3 cannot have 2 of the same element.");
                 return false;
             }
             else if (!Regex.IsMatch(armor1attack.Text, @"^\d+$"))
             {
-                showError("You must enter in an integer value for armor 1's attack");
+                ShowError("You must enter in an integer value for armor 1's attack");
                 return false;
             }
             else if (Convert.ToInt32(armor1attack.Text) < 0 || Convert.ToInt32(armor1attack.Text) > 2500)
             {
-                showError("You must enter an appropriate value for armor 1's attack (accepted values are 0-2500)");
+                ShowError("You must enter an appropriate value for armor 1's attack (accepted values are 0-2500)");
                 return false;
             }
             else if (!Regex.IsMatch(armor1defense.Text, @"^\d+$"))
             {
-                showError("You must enter in an integer value for armor 1's defense");
+                ShowError("You must enter in an integer value for armor 1's defense");
                 return false;
             }
             else if (Convert.ToInt32(armor1defense.Text) < 0 || Convert.ToInt32(armor1defense.Text) > 2500)
             {
-                showError("You must enter an appropriate value for armor 1's defense (accepted values are 0-2500)");
+                ShowError("You must enter an appropriate value for armor 1's defense (accepted values are 0-2500)");
                 return false;
             }
             else if (!Regex.IsMatch(armor2attack.Text, @"^\d+$"))
             {
-                showError("You must enter in an integer value for armor 2's attack");
+                ShowError("You must enter in an integer value for armor 2's attack");
                 return false;
             }
             else if (Convert.ToInt32(armor2attack.Text) < 0 || Convert.ToInt32(armor2attack.Text) > 2500)
             {
-                showError("You must enter an appropriate value for armor 2's attack (accepted values are 0-2500)");
+                ShowError("You must enter an appropriate value for armor 2's attack (accepted values are 0-2500)");
                 return false;
             }
             else if (!Regex.IsMatch(armor2defense.Text, @"^\d+$"))
             {
-                showError("You must enter in an integer value for armor 2's defense");
+                ShowError("You must enter in an integer value for armor 2's defense");
                 return false;
             }
             else if (Convert.ToInt32(armor2defense.Text) < 0 || Convert.ToInt32(armor2defense.Text) > 2500)
             {
-                showError("You must enter an appropriate value for armor 2's defense (accepted values are 0-2500)");
+                ShowError("You must enter an appropriate value for armor 2's defense (accepted values are 0-2500)");
                 return false;
             }
             else if (!Regex.IsMatch(armor3attack.Text, @"^\d+$"))
             {
-                showError("You must enter in an integer value for armor 3's attack");
+                ShowError("You must enter in an integer value for armor 3's attack");
                 return false;
             }
             else if (Convert.ToInt32(armor3attack.Text) < 0 || Convert.ToInt32(armor3attack.Text) > 2500)
             {
-                showError("You must enter an appropriate value for armor 3's attack (accepted values are 0-2500)");
+                ShowError("You must enter an appropriate value for armor 3's attack (accepted values are 0-2500)");
                 return false;
             }
             else if (!Regex.IsMatch(armor3defense.Text, @"^\d+$"))
             {
-                showError("You must enter in an integer value for armor 3's defense");
+                ShowError("You must enter in an integer value for armor 3's defense");
                 return false;
             }
             else if (Convert.ToInt32(armor3defense.Text) < 0 || Convert.ToInt32(armor3defense.Text) > 2500)
             {
-                showError("You must enter an appropriate value for armor 3's defense (accepted values are 0-2500)");
+                ShowError("You must enter an appropriate value for armor 3's defense (accepted values are 0-2500)");
                 return false;
             }
             else
@@ -582,13 +529,17 @@ namespace EpicBossCalculator
             }
         }
 
-        private void showError(string theError)
+        private void ShowError(string theError)
         {
             MessageBox.Show(theError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
         }
 
         private void Form1_Load(object sender, EventArgs e)
         {
+            armor1combo.SelectedIndexChanged += ArmorSelectedIndexChanged;
+            armor2combo.SelectedIndexChanged += ArmorSelectedIndexChanged;
+            armor3combo.SelectedIndexChanged += ArmorSelectedIndexChanged;
+
             armor1manual.Checked = true;
             armor2manual.Checked = true;
             armor3manual.Checked = true;
@@ -605,7 +556,7 @@ namespace EpicBossCalculator
             }
         }
 
-        public virtual void armor_KeyPress(object sender, KeyPressEventArgs e)
+        public virtual void ComboKeyPress(object sender, KeyPressEventArgs e)
         {
             ComboBox cb = (ComboBox)sender;
             cb.DroppedDown = true;
@@ -645,8 +596,9 @@ namespace EpicBossCalculator
                 e.Handled = true;
         }
 
-        private void armorSelectedIndexChanged(object sender, EventArgs e, int armorNum)
+        private void ArmorSelectedIndexChanged(object sender, EventArgs e)
         {
+            string armorNum = ((ComboBox)sender).Tag.ToString();
             try
             {
                 string armorName = ((ComboBox)sender).Text.Replace("\'", "\'\'");
@@ -654,42 +606,23 @@ namespace EpicBossCalculator
                 DataRow[] theArmor;
                 theArmor = allArmors.Select("Name=\'" + armorName + "\'");
 
-                ((ComboBox)this.Controls.Find("armor" + armorNum + "element1", false)[0]).Text = theArmor[0]["Element1"].ToString();
+                ((ComboBox)tabControl1.Controls[2].Controls.Find("armor" + armorNum + "element1", false)[0]).Text = theArmor[0]["Element1"].ToString();
                 if (theArmor[0]["Element2"].ToString() == "0")
-                    ((ComboBox)this.Controls.Find("armor" + armorNum + "element2", false)[0]).Text = "None";
+                    ((ComboBox)tabControl1.Controls[2].Controls.Find("armor" + armorNum + "element2", false)[0]).Text = "None";
                 else
-                    ((ComboBox)this.Controls.Find("armor" + armorNum + "element2", false)[0]).Text = theArmor[0]["Element2"].ToString();
-                ((TextBox)this.Controls.Find("armor" + armorNum + "attack", false)[0]).Text = ((int)theArmor[0]["Attack"]).ToString();
-                ((TextBox)this.Controls.Find("armor" + armorNum + "defense", false)[0]).Text = ((int)theArmor[0]["Defense"]).ToString();
+                    ((ComboBox)tabControl1.Controls[2].Controls.Find("armor" + armorNum + "element2", false)[0]).Text = theArmor[0]["Element2"].ToString();
+                ((TextBox)tabControl1.Controls[2].Controls.Find("armor" + armorNum + "attack", false)[0]).Text = ((int)theArmor[0]["Attack"]).ToString();
+                ((TextBox)tabControl1.Controls[2].Controls.Find("armor" + armorNum + "defense", false)[0]).Text = ((int)theArmor[0]["Defense"]).ToString();
             }
             catch (Exception ex)
             {
-                showError(ex.Message);
+                ShowError(ex.Message);
             }
         }
     }
 }
 
 /*
-(knight health ignoring level 1 - (r) = .99989)
-y=51.333333333333+5.5757575757576x
-
-
-10,92
-20,131
-30,169
-40,190
-50,211
-60,232
-70,253
-80,274
-90,295
-100,316
-
-
-
-
-
 health jumps
 -------------
 1 -> 10 = 72
