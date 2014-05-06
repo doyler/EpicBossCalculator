@@ -206,7 +206,7 @@ namespace EpicBossCalculator
                 int followerHealth = getFollowerHealth(100);
                 int followerStats = getFollowerStats(100);
                 decimal baseAttack = getBaseAttack(100);
-                decimal knightBonus = 2;
+                decimal knightBonus = 1 + ((5 - 1) * 0.25m); //5 is the knight count from UI
 
                 decimal guildRankBonus = 1.0m;
                 if (guildRank.SelectedIndex == 1)
@@ -645,67 +645,22 @@ namespace EpicBossCalculator
                 e.Handled = true;
         }
 
-        private void armor1combo_SelectedIndexChanged(object sender, EventArgs e)
+        private void armorSelectedIndexChanged(object sender, EventArgs e, int armorNum)
         {
             try
             {
-                string armorName = armor1combo.Text.Replace("\'", "\'\'");
+                string armorName = ((ComboBox)sender).Text.Replace("\'", "\'\'");
 
                 DataRow[] theArmor;
                 theArmor = allArmors.Select("Name=\'" + armorName + "\'");
 
-                armor1element1.Text = theArmor[0]["Element1"].ToString();
+                ((ComboBox)this.Controls.Find("armor" + armorNum + "element1", false)[0]).Text = theArmor[0]["Element1"].ToString();
                 if (theArmor[0]["Element2"].ToString() == "0")
-                    armor1element2.Text = "None";
+                    ((ComboBox)this.Controls.Find("armor" + armorNum + "element2", false)[0]).Text = "None";
                 else
-                    armor1element2.Text = theArmor[0]["Element2"].ToString();
-                armor1attack.Text = ((int)theArmor[0]["Attack"]).ToString();
-                armor1defense.Text = ((int)theArmor[0]["Defense"]).ToString();
-            }
-            catch (Exception ex)
-            {
-                showError(ex.Message);
-            }
-        }
-
-        private void armor2combo_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                string armorName = armor2combo.Text.Replace("\'", "\'\'");
-
-                DataRow[] theArmor;
-                theArmor = allArmors.Select("Name=\'" + armorName + "\'");
-
-                armor2element1.Text = theArmor[0]["Element1"].ToString();
-                if (theArmor[0]["Element2"].ToString() == "0")
-                    armor2element2.Text = "None";
-                else
-                    armor2element2.Text = theArmor[0]["Element2"].ToString();
-                armor2attack.Text = ((int)theArmor[0]["Attack"]).ToString();
-                armor2defense.Text = ((int)theArmor[0]["Defense"]).ToString();
-            }
-            catch (Exception ex)
-            {
-                showError(ex.Message);
-            }
-        }
-        private void armor3combo_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            try
-            {
-                string armorName = armor3combo.Text.Replace("\'", "\'\'");
-
-                DataRow[] theArmor;
-                theArmor = allArmors.Select("Name=\'" + armorName + "\'");
-
-                armor3element1.Text = theArmor[0]["Element1"].ToString();
-                if (theArmor[0]["Element2"].ToString() == "0")
-                    armor3element2.Text = "None";
-                else
-                    armor3element2.Text = theArmor[0]["Element2"].ToString();
-                armor3attack.Text = ((int)theArmor[0]["Attack"]).ToString();
-                armor3defense.Text = ((int)theArmor[0]["Defense"]).ToString();
+                    ((ComboBox)this.Controls.Find("armor" + armorNum + "element2", false)[0]).Text = theArmor[0]["Element2"].ToString();
+                ((TextBox)this.Controls.Find("armor" + armorNum + "attack", false)[0]).Text = ((int)theArmor[0]["Attack"]).ToString();
+                ((TextBox)this.Controls.Find("armor" + armorNum + "defense", false)[0]).Text = ((int)theArmor[0]["Defense"]).ToString();
             }
             catch (Exception ex)
             {

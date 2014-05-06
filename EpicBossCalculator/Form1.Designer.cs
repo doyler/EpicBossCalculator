@@ -173,7 +173,7 @@
             this.armor2combo.Name = "armor2combo";
             this.armor2combo.Size = new System.Drawing.Size(189, 21);
             this.armor2combo.TabIndex = 44;
-            this.armor2combo.SelectedIndexChanged += new System.EventHandler(this.armor2combo_SelectedIndexChanged);
+            this.armor2combo.SelectedIndexChanged += (sender, e) => armorSelectedIndexChanged(sender, e, 2);
             this.armor2combo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // label11
@@ -193,7 +193,7 @@
             this.armor1combo.Name = "armor1combo";
             this.armor1combo.Size = new System.Drawing.Size(189, 21);
             this.armor1combo.TabIndex = 32;
-            this.armor1combo.SelectedIndexChanged += new System.EventHandler(this.armor1combo_SelectedIndexChanged);
+            this.armor1combo.SelectedIndexChanged += (sender, e) => armorSelectedIndexChanged(sender, e, 1);
             this.armor1combo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // label10
@@ -640,7 +640,7 @@
             this.armor3combo.Name = "armor3combo";
             this.armor3combo.Size = new System.Drawing.Size(189, 21);
             this.armor3combo.TabIndex = 85;
-            this.armor3combo.SelectedIndexChanged += new System.EventHandler(this.armor3combo_SelectedIndexChanged);
+            this.armor3combo.SelectedIndexChanged += (sender, e) => armorSelectedIndexChanged(sender, e, 3);
             this.armor3combo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.armor_KeyPress);
             // 
             // label22
@@ -834,7 +834,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(583, 718);
+            this.ClientSize = new System.Drawing.Size(534, 718);
             this.Controls.Add(this.bossLevel);
             this.Controls.Add(this.label28);
             this.Controls.Add(this.bossHealth);
