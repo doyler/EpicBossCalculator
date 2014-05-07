@@ -185,7 +185,6 @@
             this.bossElement2.Name = "bossElement2";
             this.bossElement2.Size = new System.Drawing.Size(90, 21);
             this.bossElement2.TabIndex = 51;
-            this.bossElement2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
             // 
             // bossElement1
             // 
@@ -202,7 +201,6 @@
             this.bossElement1.Name = "bossElement1";
             this.bossElement1.Size = new System.Drawing.Size(93, 21);
             this.bossElement1.TabIndex = 50;
-            this.bossElement1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
             // 
             // bossAttack
             // 
@@ -244,7 +242,6 @@
             this.guildRank.Name = "guildRank";
             this.guildRank.Size = new System.Drawing.Size(93, 21);
             this.guildRank.TabIndex = 60;
-            this.guildRank.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
             // 
             // label17
             // 
@@ -311,7 +308,6 @@
             this.airBonus.Name = "airBonus";
             this.airBonus.Size = new System.Drawing.Size(67, 21);
             this.airBonus.TabIndex = 72;
-            this.airBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
             // 
             // earthBonus
             // 
@@ -333,7 +329,6 @@
             this.earthBonus.Name = "earthBonus";
             this.earthBonus.Size = new System.Drawing.Size(67, 21);
             this.earthBonus.TabIndex = 73;
-            this.earthBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
             // 
             // fireBonus
             // 
@@ -355,7 +350,6 @@
             this.fireBonus.Name = "fireBonus";
             this.fireBonus.Size = new System.Drawing.Size(67, 21);
             this.fireBonus.TabIndex = 74;
-            this.fireBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
             // 
             // spiritBonus
             // 
@@ -377,7 +371,6 @@
             this.spiritBonus.Name = "spiritBonus";
             this.spiritBonus.Size = new System.Drawing.Size(67, 21);
             this.spiritBonus.TabIndex = 75;
-            this.spiritBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
             // 
             // waterBonus
             // 
@@ -399,7 +392,6 @@
             this.waterBonus.Name = "waterBonus";
             this.waterBonus.Size = new System.Drawing.Size(67, 21);
             this.waterBonus.TabIndex = 76;
-            this.waterBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
             // 
             // bossHealth
             // 

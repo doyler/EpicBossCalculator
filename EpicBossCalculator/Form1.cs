@@ -540,6 +540,27 @@ namespace EpicBossCalculator
             armor2combo.SelectedIndexChanged += ArmorSelectedIndexChanged;
             armor3combo.SelectedIndexChanged += ArmorSelectedIndexChanged;
 
+            this.bossElement1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.bossElement2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+
+            this.guildRank.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.airBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.earthBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.fireBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.spiritBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.waterBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+
+            this.armor1element1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.armor1element2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.armor2element1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.armor2element2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.armor3element1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.armor3element2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+
+            this.armor1combo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.armor2combo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            this.armor3combo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            
             armor1manual.Checked = true;
             armor2manual.Checked = true;
             armor3manual.Checked = true;
