@@ -181,12 +181,12 @@ namespace EpicBossCalculator
 
         private void calculate_Click(object sender, EventArgs e)
         {
-            bossLevel.Text = "46";
-            bossElement1.Text = "Fire";
-            bossElement2.Text = "Earth";
-            bossAttack.Text = "2203";
-            bossDefense.Text = "789";
-            bossHealth.Text = "41633";
+            bossLevel.Text = "21";
+            bossElement1.Text = "Spirit";
+            bossElement2.Text = "Water";
+            bossAttack.Text = "1506";
+            bossDefense.Text = "654";
+            bossHealth.Text = "32231";
             
             guildRank.Text = "Commander";
             airBonus.Text = "10";
@@ -195,15 +195,14 @@ namespace EpicBossCalculator
             spiritBonus.Text = "9";
             waterBonus.Text = "10";
 
-            armor2manual.Checked = true;
-            //Nathair+
-            armor2element1.Text = "Earth";
-            armor2element2.Text = "Water";
-            armor2attack.Text = "1432";
-            armor2defense.Text = "1437";
+            armor1manual.Checked = true;
+            armor1element1.Text = "Air";
+            armor1element2.Text = "Fire";
+            armor1attack.Text = "1564";
+            armor1defense.Text = "1430";
 
-            armor1auto.Checked = true;
-            armor1combo.Text = "Northerner's Battlegear";
+            armor2auto.Checked = true;
+            armor2combo.Text = "Northerner's Battlegear";
 
             armor3manual.Checked = true;
             //Revelation
@@ -534,33 +533,32 @@ namespace EpicBossCalculator
             MessageBox.Show(theError, "Error", MessageBoxButtons.OK, MessageBoxIcon.Exclamation, MessageBoxDefaultButton.Button1);
         }
 
+        public static IEnumerable<Control> GetAllControls(Control root)
+        {
+            var stack = new Stack<Control>();
+            stack.Push(root);
+
+            while (stack.Any())
+            {
+                var next = stack.Pop();
+                foreach (Control child in next.Controls)
+                    stack.Push(child);
+                yield return next;
+            }
+        }
+
         private void Form1_Load(object sender, EventArgs e)
         {
             armor1combo.SelectedIndexChanged += ArmorSelectedIndexChanged;
             armor2combo.SelectedIndexChanged += ArmorSelectedIndexChanged;
             armor3combo.SelectedIndexChanged += ArmorSelectedIndexChanged;
 
-            this.bossElement1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.bossElement2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            var comboBoxes = GetAllControls(this).OfType<ComboBox>();
+            foreach (ComboBox cb in comboBoxes)
+            {
+                cb.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
+            }
 
-            this.guildRank.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.airBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.earthBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.fireBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.spiritBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.waterBonus.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-
-            this.armor1element1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.armor1element2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.armor2element1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.armor2element2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.armor3element1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.armor3element2.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-
-            this.armor1combo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.armor2combo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            this.armor3combo.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ComboKeyPress);
-            
             armor1manual.Checked = true;
             armor2manual.Checked = true;
             armor3manual.Checked = true;
