@@ -181,35 +181,40 @@ namespace EpicBossCalculator
 
         private void calculate_Click(object sender, EventArgs e)
         {
-            bossLevel.Text = "21";
+            bossLevel.Text = "20";
             bossElement1.Text = "Spirit";
-            bossElement2.Text = "Water";
-            bossAttack.Text = "1506";
-            bossDefense.Text = "654";
-            bossHealth.Text = "32231";
+            bossElement2.Text = "Air";
+            bossAttack.Text = "1392";
+            bossDefense.Text = "635";
+            bossHealth.Text = "29195";
             
             guildRank.Text = "Commander";
             airBonus.Text = "10";
             earthBonus.Text = "9";
             fireBonus.Text = "10";
-            spiritBonus.Text = "9";
+            spiritBonus.Text = "10";
             waterBonus.Text = "10";
 
             armor1manual.Checked = true;
+            //Pestilence
             armor1element1.Text = "Air";
             armor1element2.Text = "Fire";
             armor1attack.Text = "1564";
             armor1defense.Text = "1430";
 
-            armor2auto.Checked = true;
-            armor2combo.Text = "Northerner's Battlegear";
+            armor2manual.Checked = true;
+            //Voidborne
+            armor2element1.Text = "Fire";
+            armor2element2.Text = "Spirit";
+            armor2attack.Text = "1610";
+            armor2defense.Text = "1263";
 
             armor3manual.Checked = true;
-            //Revelation
-            armor3element1.Text = "Water";
-            armor3element2.Text = "Spirit";
-            armor3attack.Text = "1802";
-            armor3defense.Text = "1892";
+            //Raiment
+            armor3element1.Text = "Spirit";
+            armor3element2.Text = "Earth";
+            armor3attack.Text = "1545";
+            armor3defense.Text = "1370";
 
 
             if (ValidateForm())
@@ -219,7 +224,7 @@ namespace EpicBossCalculator
                 int followerHealth = GetFollowerHealth(100);
                 int followerStats = GetFollowerStats(100);
                 decimal baseAttack = GetBaseAttack(100);
-                decimal knightBonus = 1 + ((5 - 1) * 0.25m); //5 is the knight count from UI
+                decimal knightBonus = 1 + ((3 - 1) * 0.25m); //5 is the knight count from UI
 
                 decimal guildRankBonus = 1.0m;
                 if (guildRank.SelectedIndex == 1)
