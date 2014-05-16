@@ -83,7 +83,6 @@ namespace EpicBossCalculator
             {
                 elementBonus += (Convert.ToInt32(waterBonus.Text) / 100m);
             }
-
             return elementBonus;
         }
 
@@ -109,15 +108,15 @@ namespace EpicBossCalculator
             switch (elementDef)
             {
                 case "Air":
-                    return (element1off == "Earth") || (element2off == "Earth");
+                    return (element1off == "Earth") || (element2off == "Earth") || (element1off == "Starmetal") || (element2off == "Starmetal");
                 case "Earth":
-                    return (element1off == "Spirit") || (element2off == "Spirit");
+                    return (element1off == "Spirit") || (element2off == "Spirit") || (element1off == "Starmetal") || (element2off == "Starmetal");
                 case "Fire":
-                    return (element1off == "Water") || (element2off == "Water");
+                    return (element1off == "Water") || (element2off == "Water") || (element1off == "Starmetal") || (element2off == "Starmetal");
                 case "Spirit":
-                    return (element1off == "Fire") || (element2off == "Fire");
+                    return (element1off == "Fire") || (element2off == "Fire") || (element1off == "Starmetal") || (element2off == "Starmetal");
                 case "Water":
-                    return (element1off == "Air") || (element2off == "Air");
+                    return (element1off == "Air") || (element2off == "Air") || (element1off == "Starmetal") || (element2off == "Starmetal");
                 default:
                     return false;
             }
@@ -178,16 +177,15 @@ namespace EpicBossCalculator
             return (int)Math.Ceiling(Math.Ceiling(stat * guildElementBonus) * guildRankBonus);
         }
 
-
-        private void calculate_Click(object sender, EventArgs e)
+        private void setValues()
         {
-            bossLevel.Text = "20";
+            bossLevel.Text = "35";
             bossElement1.Text = "Spirit";
             bossElement2.Text = "Air";
-            bossAttack.Text = "1392";
-            bossDefense.Text = "635";
-            bossHealth.Text = "29195";
-            
+            bossAttack.Text = "2116";
+            bossDefense.Text = "797";
+            bossHealth.Text = "41385";
+
             guildRank.Text = "Commander";
             airBonus.Text = "10";
             earthBonus.Text = "9";
@@ -210,12 +208,19 @@ namespace EpicBossCalculator
             armor2defense.Text = "1263";
 
             armor3manual.Checked = true;
-            //Raiment
+            //Apocalypse
             armor3element1.Text = "Spirit";
             armor3element2.Text = "Earth";
-            armor3attack.Text = "1545";
-            armor3defense.Text = "1370";
+            armor3attack.Text = "1862";
+            armor3defense.Text = "1832";
 
+            results.Text = "";
+        }
+
+
+        private void calculate_Click(object sender, EventArgs e)
+        {
+            setValues();
 
             if (ValidateForm())
             {
@@ -224,7 +229,7 @@ namespace EpicBossCalculator
                 int followerHealth = GetFollowerHealth(100);
                 int followerStats = GetFollowerStats(100);
                 decimal baseAttack = GetBaseAttack(100);
-                decimal knightBonus = 1 + ((3 - 1) * 0.25m); //5 is the knight count from UI
+                decimal knightBonus = 1 + (((Convert.ToInt32(numKnights.Text) + Convert.ToInt32(numFriends.Text)) - 1) * 0.25m);
 
                 decimal guildRankBonus = 1.0m;
                 if (guildRank.SelectedIndex == 1)
@@ -255,15 +260,15 @@ namespace EpicBossCalculator
                 int playerHitsTaken = (playerHealth / playerDamageTaken) + 1;
                 int followerHitsTaken = (followerHealth / followerDamageTaken) + 1;
 
-                outcomes.Text += String.Format("Boss level {0}, {1}/{2}, {3}/{4}", bossLevel.Text, bossElement1.Text, bossElement2.Text, bossAttack.Text, bossDefense.Text);
-                outcomes.Text += "\r\n";
-                outcomes.Text += String.Format("Level {0} {1}", 100, guildRank.Text);
-                outcomes.Text += "\r\n";
-                outcomes.Text += String.Format("Level {0} {1}", 99, armor1combo.Text);
-                outcomes.Text += "\r\n";
-                outcomes.Text += String.Format("Player: {0} damage done, {1} damage taken, {2} hits taken, {3} total damage done", playerDamageDone, playerDamageTaken, playerHitsTaken, (playerHitsTaken - 1) * playerDamageDone);
-                outcomes.Text += "\r\n";
-                outcomes.Text += String.Format("Follower: {0} damage done, {1} damage taken, {2} hits taken, {3} total damage done", followerDamageDone, followerDamageTaken, followerHitsTaken, (followerHitsTaken - 1) * followerDamageDone);
+                results.Text += String.Format("Boss level {0}, {1}/{2}, {3}/{4}", bossLevel.Text, bossElement1.Text, bossElement2.Text, bossAttack.Text, bossDefense.Text);
+                results.Text += "\r\n";
+                results.Text += String.Format("Level {0} {1}", 100, guildRank.Text);
+                results.Text += "\r\n";
+                results.Text += String.Format("Level {0} {1}", 99, armor1combo.Text);
+                results.Text += "\r\n";
+                results.Text += String.Format("Player: {0} damage done, {1} damage taken, {2} hits taken, {3} total damage done", playerDamageDone, playerDamageTaken, playerHitsTaken, (playerHitsTaken - 1) * playerDamageDone);
+                results.Text += "\r\n";
+                results.Text += String.Format("Follower: {0} damage done, {1} damage taken, {2} hits taken, {3} total damage done", followerDamageDone, followerDamageTaken, followerHitsTaken, (followerHitsTaken - 1) * followerDamageDone);
             }
         }
 
