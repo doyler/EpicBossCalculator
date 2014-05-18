@@ -86,18 +86,30 @@ namespace EpicBossCalculator
             return elementBonus;
         }
 
-        private decimal GetElementalBonus(string element1off, string element2off, string element1def, string element2def)
+        private decimal GetElementalBonus(string element1off, string element2off, string element1def, string element2def, bool isNemesis)
         {
             decimal elementalBonus = 1m;
-            if (ArmorIsStrongAgainst(element1off, element2off, element1def))
+
+            if (isNemesis)
             {
-                elementalBonus += 0.5m;
+                elementalBonus = 4.5m;
             }
-            if (element2def != "None")
+            else if (element1off == "Starmetal")
             {
-                if (ArmorIsStrongAgainst(element1off, element2off, element2def))
+                elementalBonus = 1.5m;
+            }
+            else
+            {
+                if (ArmorIsStrongAgainst(element1off, element2off, element1def))
                 {
                     elementalBonus += 0.5m;
+                }
+                if (element2def != "None")
+                {
+                    if (ArmorIsStrongAgainst(element1off, element2off, element2def))
+                    {
+                        elementalBonus += 0.5m;
+                    }
                 }
             }
             return elementalBonus;
@@ -246,10 +258,10 @@ namespace EpicBossCalculator
                 }
 
                 decimal guildElementBonus = GetGuildElementBonus(armor1element1.Text, armor1element2.Text);
-                decimal playerElementBonus = GetElementalBonus(armor1element1.Text, armor1element2.Text, bossElement1.Text, bossElement2.Text);
+                decimal playerElementBonus = GetElementalBonus(armor1element1.Text, armor1element2.Text, bossElement1.Text, bossElement2.Text, armor1isNemesis.Checked);
                     
                 decimal bossLevelBonus = GetBossLevelBonus(Convert.ToInt32(bossLevel.Text));
-                decimal bossElementBonus = GetElementalBonus(bossElement1.Text, bossElement2.Text, armor1element1.Text, armor1element2.Text);
+                decimal bossElementBonus = GetElementalBonus(bossElement1.Text, bossElement2.Text, armor1element1.Text, armor1element2.Text, false);
 
                 int playerDamageDone = GetDamageDone(baseAttack, Convert.ToInt32(armor1attack.Text) + playerStats, Convert.ToInt32(bossDefense.Text), guildRankBonus, guildElementBonus, playerElementBonus, knightBonus);
                 int followerDamageDone = GetDamageDone(baseAttack, Convert.ToInt32(armor1attack.Text) + followerStats, Convert.ToInt32(bossDefense.Text), guildRankBonus, guildElementBonus, playerElementBonus, knightBonus);
